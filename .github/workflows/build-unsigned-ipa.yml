@@ -9,21 +9,23 @@ on:
 jobs:
   build:
     name: Build unsigned iOS app
-    runs-on: macos-15
+    runs-on: macos-26
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Select Xcode
-        run: sudo xcode-select -s /Applications/Xcode_16.4.app
+      - name: Show Xcode version
+        run: xcodebuild -version
 
       - name: Resolve Swift packages
         run: |
+          set -o pipefail
           xcodebuild \
             -resolvePackageDependencies \
             -project CodexMobile/CodexMobile.xcodeproj \
-            -scheme CodexMobile
+            -scheme CodexMobile \
+            2>&1 | tee "$RUNNER_TEMP/xcodebuild-resolve.log"
 
       - name: Archive without signing
         run: |
@@ -37,7 +39,8 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
-            DEVELOPMENT_TEAM=""
+            DEVELOPMENT_TEAM="" \
+            2>&1 | tee "$RUNNER_TEMP/xcodebuild-archive.log"
 
       - name: Package unsigned IPA
         run: |
@@ -63,3 +66,13 @@ jobs:
           name: CodexAnywhere-unsigned-ipa
           path: build/CodexAnywhere-unsigned.ipa
           if-no-files-found: error
+
+      - name: Upload build logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xcodebuild-logs
+          path: |
+            ${{ runner.temp }}/xcodebuild-resolve.log
+            ${{ runner.temp }}/xcodebuild-archive.log
+          if-no-files-found: ignore
