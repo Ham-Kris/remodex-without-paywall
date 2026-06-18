@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Show Xcode version
         run: xcodebuild -version
@@ -35,7 +35,7 @@ jobs:
             -scheme CodexMobile \
             -configuration Release \
             -destination 'generic/platform=iOS' \
-            -archivePath "$RUNNER_TEMP/CodexAnywhere.xcarchive" \
+            -archivePath "$RUNNER_TEMP/PathwitCode.xcarchive" \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
@@ -45,31 +45,31 @@ jobs:
       - name: Package unsigned IPA
         run: |
           set -euo pipefail
-          APP_PATH="$RUNNER_TEMP/CodexAnywhere.xcarchive/Products/Applications/CodexMobile.app"
+          APP_PATH="$RUNNER_TEMP/PathwitCode.xcarchive/Products/Applications/CodexMobile.app"
           IPA_ROOT="$RUNNER_TEMP/ipa"
-          IPA_PATH="$RUNNER_TEMP/CodexAnywhere-unsigned.ipa"
+          IPA_PATH="$RUNNER_TEMP/PathwitCode-unsigned.ipa"
 
           test -d "$APP_PATH"
           rm -rf "$IPA_ROOT" "$IPA_PATH"
           mkdir -p "$IPA_ROOT/Payload"
-          cp -R "$APP_PATH" "$IPA_ROOT/Payload/Codex Anywhere.app"
+          cp -R "$APP_PATH" "$IPA_ROOT/Payload/Pathwit Code.app"
 
           cd "$IPA_ROOT"
           /usr/bin/zip -qry "$IPA_PATH" Payload
 
           mkdir -p "$GITHUB_WORKSPACE/build"
-          cp "$IPA_PATH" "$GITHUB_WORKSPACE/build/CodexAnywhere-unsigned.ipa"
+          cp "$IPA_PATH" "$GITHUB_WORKSPACE/build/PathwitCode-unsigned.ipa"
 
       - name: Upload IPA artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
-          name: CodexAnywhere-unsigned-ipa
-          path: build/CodexAnywhere-unsigned.ipa
+          name: PathwitCode-unsigned-ipa
+          path: build/PathwitCode-unsigned.ipa
           if-no-files-found: error
 
       - name: Upload build logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: xcodebuild-logs
           path: |
