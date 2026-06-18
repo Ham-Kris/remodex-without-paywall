@@ -12,15 +12,15 @@ import Foundation
 enum RemodexLaunchTarget: String, AppEnum {
     case home
 
-    static var typeDisplayRepresentation = TypeDisplayRepresentation(name: "Codex Anywhere")
+    static var typeDisplayRepresentation = TypeDisplayRepresentation(name: "Pathwit Code")
     static var caseDisplayRepresentations: [Self: DisplayRepresentation] = [
-        .home: "Codex Anywhere"
+        .home: "Pathwit Code"
     ]
 }
 
 struct RemodexLaunchIntent: OpenIntent {
-    static var title: LocalizedStringResource = "Open Codex Anywhere"
-    static var description = IntentDescription("Brings Codex Anywhere to the foreground.")
+    static var title: LocalizedStringResource = "Open Pathwit Code"
+    static var description = IntentDescription("Brings Pathwit Code to the foreground.")
 
     @Parameter(title: "Target")
     var target: RemodexLaunchTarget
